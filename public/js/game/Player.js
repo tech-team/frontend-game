@@ -1,35 +1,46 @@
 define([
 	'classy',
-	'game/GameObject'
+	'game/AliveObject',
+    'game/KeyCoder',
+    'collision'
 ],
-function(Class, GameObject) {
-	var Player = GameObject.$extend({
-		__init__ : function() {
-            this.$super("res/gfx/objects/player.png");
-
-            this.score = 0;
+function(Class, AliveObject, KeyCoder, ndgmr) {
+	var Player = AliveObject.$extend({
+		__init__: function() {
+            this.health = 100;
+            this.dead = false;
+			this.score = 0;
+            this.cooldown = 0;
+            this.effects = null;
 		},
 
-        fromJSON: function(data) {
-            this.$super(data);
+        setEffects: function(effects) {
+            this.effects = effects;
         },
 
-		update: function() {
-			this.$super();
-		},
+		update: function(event) {
 
-		render: function(context) {
-            context.save();
+        },
 
-            context.translate(this.x, this.y);
-            context.rotate(this.angle);
-            context.translate(-this.x, -this.y);
+        damage: function(howMuch) {
+            this.health -= howMuch;
 
-            this.$super(context);
+            var damageEffect = this.effects.damage;
+            damageEffect.alpha = 1;
+            damageEffect.visible = true;
+            var tid = setInterval(function() {
+                if (damageEffect.alpha > 0)
+                    damageEffect.alpha -= 0.05;
+                else {
+                    damageEffect.visible = false;
+                    clearInterval(tid);
+                }
+            }, 50);
+        },
 
-
-            context.restore();
-		}
+        isDead: function() {
+            return this.health <= 0;
+        }
 	});
 
 	return Player;

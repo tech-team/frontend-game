@@ -1,23 +1,18 @@
 define([
-    'classy'
+    'classy',
+    'game/GameObject'
 ],
-    function(Class) {
-
-        var Bullet = Class.$extend({
-            __init__: function(x, y, speed, angle) {
-                this.x = x;
-                this.y = y;
-                this.speed = speed;
-                this.angle = angle;
+    function(Class, GameObject) {
+        var Bullet = GameObject.$extend({
+            __init__: function(dispObj, data) {
+                this.setDispObj(dispObj); //or kinda super(dispObj)
+                this.power = 10;
+                this.speed = 5;
             },
 
-            update: function() {
-                //TODO: change self position using speed and angle
-                //TODO: test for collisions after that (in the game_main)
-            },
-
-            render: function() {
-
+            update: function(event) {
+                this.dispObj.x += this.speed * Math.cos( (Math.PI / 180) * this.dispObj.rotation);
+                this.dispObj.y += this.speed * Math.sin( (Math.PI / 180) * this.dispObj.rotation);
             }
         });
 
